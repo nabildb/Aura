@@ -8,10 +8,15 @@ import { AboutPage } from '@/app/pages/AboutPage';
 import { ContactPage } from '@/app/pages/ContactPage';
 import { LoginPage } from '@/app/pages/LoginPage';
 import { AdminLoginPage } from '@/app/pages/AdminLoginPage';
+import { UserAccountPage } from '@/app/pages/UserAccountPage';
+import { ScrollToTop } from '@/app/components/ScrollToTop';
+import { ScrollToTopButton } from '@/app/components/ScrollToTopButton';
 
 export default function AppRouter() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
+      <ScrollToTopButton />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/Home" element={<HomePage />} />
@@ -21,6 +26,7 @@ export default function AppRouter() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route path="/account" element={<UserAccountPage />} />
         <Route
           path="*"
           element={

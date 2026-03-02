@@ -403,8 +403,11 @@ export function CatalogPage() {
                       </div>
                     )}
 
-                    {/* Imagen con zoom en hover */}
-                    <div className="flex items-center justify-center p-6 bg-slate-50/60 overflow-hidden">
+                    {/* Imagen con zoom en hover — Ahora clicable */}
+                    <Link
+                      to={`/product/${product.id}`}
+                      className="flex items-center justify-center p-6 bg-slate-50/60 overflow-hidden cursor-pointer"
+                    >
                       {product.image_url ? (
                         <img
                           src={product.image_url}
@@ -418,7 +421,7 @@ export function CatalogPage() {
                           </svg>
                         </div>
                       )}
-                    </div>
+                    </Link>
 
                     {/* Info */}
                     <div className="px-6 pb-6 pt-4 flex-1 flex flex-col">
@@ -427,7 +430,9 @@ export function CatalogPage() {
                           {product.category?.name ?? 'Sin categoría'}
                         </span>
                       </div>
-                      <h3 className="text-sm font-semibold text-slate-900 line-clamp-2 leading-snug">{product.name}</h3>
+                      <Link to={`/product/${product.id}`} className="hover:text-[#5B9FE3] transition-colors">
+                        <h3 className="text-sm font-semibold text-slate-900 line-clamp-2 leading-snug">{product.name}</h3>
+                      </Link>
                       <div className="mt-2 flex items-baseline gap-2">
                         <span className="text-lg font-extrabold text-slate-900">{formatPrice(product.price)}</span>
                       </div>

@@ -229,25 +229,34 @@ export function HomePage() {
                     featured.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8',
                   ].join(' ')}
                 >
-                  {/* Imagen con zoom en hover */}
-                  <div className="aspect-square bg-gradient-to-br from-[#00D4FF]/10 via-[#5B9FE3]/10 to-[#A855F7]/10 overflow-hidden flex items-center justify-center">
+                  {/* Imagen con zoom en hover — Ahora clicable */}
+                  <Link
+                    to={`/product/${product.id}`}
+                    className="flex items-center justify-center p-6 bg-slate-50/60 overflow-hidden cursor-pointer"
+                  >
                     {product.image_url ? (
                       <img
                         src={product.image_url}
                         alt={product.name}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="h-40 w-auto object-contain transition-transform duration-500 group-hover:scale-110"
                       />
                     ) : (
-                      <span className="text-slate-300 text-sm">Sin imagen</span>
+                      <div className="bg-gradient-to-br from-[#00D4FF]/10 to-[#A855F7]/10 rounded-xl p-6 shadow-inner ring-1 ring-slate-100">
+                        <svg width="64" height="48" viewBox="0 0 64 48" fill="none">
+                          <rect width="64" height="48" rx="8" fill="#F1F5F9" />
+                        </svg>
+                      </div>
                     )}
-                  </div>
+                  </Link>
 
                   {/* Info de la card */}
                   <div className="p-5">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-[#5B9FE3]">
                       {product.category?.name ?? 'Sin categoría'}
                     </span>
-                    <h3 className="mt-1 font-semibold text-slate-800 leading-snug">{product.name}</h3>
+                    <Link to={`/product/${product.id}`} className="hover:text-[#5B9FE3] transition-colors">
+                      <h3 className="mt-1 font-semibold text-slate-800 leading-snug">{product.name}</h3>
+                    </Link>
                     <p className="text-xs text-slate-500 mt-2 leading-relaxed line-clamp-2">{product.description}</p>
                     <div className="mt-4 flex items-center justify-between">
                       <span className="text-lg font-bold text-slate-900">{formatPrice(product.price)}</span>
