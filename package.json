@@ -1,0 +1,12 @@
+{
+    "name": "aura-catalogo",
+    "version": "1.0.0",
+    "description": "AURA - Catálogo de Productos",
+    "scripts": {
+        "dev": "concurrently --names \"BACK,FRONT\" --prefix-colors \"bgBlue.bold,bgMagenta.bold\" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+        "install:all": "npm install --prefix backend && npm install --prefix frontend"
+    },
+    "devDependencies": {
+        "concurrently": "^9.1.2"
+    }
+}
