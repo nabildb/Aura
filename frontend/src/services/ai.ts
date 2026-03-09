@@ -4,9 +4,9 @@
 
 import type { ChatMessage } from '@/types/chat';
 
-// URL base del backend — configurable por VITE_API_URL o dinámico según el hostname (para red local)
+// URL base del backend — se calcula dinámicamente para que funcione en red local (LAN)
 const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-const API_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? `http://${hostname}:3001`;
+const API_URL = `http://${hostname}:3001`;
 
 export const aiService = {
     /**
