@@ -57,9 +57,10 @@ export function ChatProvider({ children }: ChatProviderProps) {
 
         try {
             // Enviamos el historial completo al backend (excluimos el mensaje de bienvenida del asistente
-            // para que la IA no lo tome como contexto adicional, solo los mensajes reales)
+            // para que la IA no lo tome como contexto adicional y para cumplir que el historial
+            // con Gemini siempre empiece por un mensaje del usuario).
             const historyForApi: ChatMessage[] = updatedMessages
-                .filter((m) => !(m.role === 'assistant' && m === WELCOME_MESSAGE))
+                .filter((msg, index) => !(index === 0 && msg.role === 'assistant'))
                 .map(({ role, content }) => ({ role, content }));
 
             const reply = await aiService.sendMessage(historyForApi);

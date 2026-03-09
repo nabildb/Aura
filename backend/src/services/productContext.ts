@@ -12,10 +12,10 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 export async function buildProductContext(): Promise<string> {
     try {
-        // Cargamos productos activos con su categoría
+        // Cargamos productos activos con su categoría e imagen
         const { data: products, error: productError } = await supabase
             .from('products')
-            .select('id, name, description, price, categories(name)')
+            .select('id, name, description, price, image_url, categories(name)')
             .eq('is_active', true)
             .order('id', { ascending: true });
 
@@ -48,6 +48,7 @@ export async function buildProductContext(): Promise<string> {
                 name: string;
                 description?: string | null;
                 price?: number | null;
+                image_url?: string | null;
                 categories?: { name: string } | { name: string }[] | null;
             }) => {
                 const categoryName = Array.isArray(p.categories)
@@ -57,8 +58,9 @@ export async function buildProductContext(): Promise<string> {
                 const price = p.price != null
                     ? new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(Number(p.price))
                     : 'Precio no disponible';
+                const image = p.image_url ? `[Imagen: ${p.image_url}]` : '[Sin imagen]';
 
-                return `  [ID:${p.id}] ${p.name} (${categoryName}) — ${price}\n    ${p.description ?? 'Sin descripción'}`;
+                return `  [ID:${p.id}] ${p.name} (${categoryName}) — ${price} — ${image}\n    ${p.description ?? 'Sin descripción'}`;
             })
             .join('\n\n');
 

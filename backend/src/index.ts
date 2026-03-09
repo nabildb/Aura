@@ -13,9 +13,9 @@ const FRONTEND_URL = process.env.FRONTEND_URL ?? 'http://localhost:5173';
 
 // ── Middleware ────────────────────────────────────────────────────────────────
 
-// CORS: permite peticiones desde el frontend de AURA
+// CORS: permite peticiones desde el frontend de AURA (incluso en red local)
 app.use(cors({
-    origin: [FRONTEND_URL, 'http://localhost:5173', 'http://localhost:4173'],
+    origin: '*',
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
@@ -40,11 +40,11 @@ app.use((_req, res) => {
 
 // ── Inicio del servidor ───────────────────────────────────────────────────────
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`✅ AURA AI Backend corriendo en http://localhost:${PORT}`);
     console.log(`   Health check: http://localhost:${PORT}/health`);
     console.log(`   Chat API:     POST http://localhost:${PORT}/api/chat`);
-    console.log(`   CORS habilitado para: ${FRONTEND_URL}`);
+    console.log(`   CORS habilitado para: LAN y ${FRONTEND_URL}`);
 });
 
 export default app;

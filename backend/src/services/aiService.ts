@@ -1,35 +1,32 @@
 // aiService.ts
-// Integración con Google Gemini API.
-// Construye el system prompt con contexto de AURA e invoca el modelo de chat.
+// Integranción con Groq (reemplaza a Gemini para mejor fiabilidad gratuita).
+// Inyecta el catálogo de productos de Supabase en el system prompt.
 
-import { GoogleGenAI, Content } from '@google/genai';
+import Groq from 'groq-sdk';
 import { buildProductContext } from './productContext';
 import type { ChatMessage } from '../types/chat';
 
-const apiKey = process.env.GOOGLE_API_KEY ?? '';
-const ai = new GoogleGenAI({ apiKey });
+const apiKey = process.env.GROQ_API_KEY ?? '';
+const groq = new Groq({ apiKey });
 
-// Nombre del modelo Gemini a usar
-const MODEL = 'gemini-2.0-flash';
+// Modelo de Groq sugerido (llama-3.3-70b es potente y rápido)
+const MODEL: string = 'llama-3.3-70b-versatile';
 
 /**
  * Construye el system prompt de AURA con el catálogo actual inyectado.
- * Se llama en cada petición para que el contexto sea siempre fresco.
  */
 async function buildSystemPrompt(): Promise<string> {
     const catalogContext = await buildProductContext();
 
     return `Eres el asistente virtual de AURA, una tienda de productos de alta calidad.
-Tu misión es ayudar a los usuarios a encontrar productos, responder preguntas sobre el catálogo
-y ofrecer una experiencia de compra excepcional.
+Tu misión es ayudar a los usuarios de forma MUY breve, concisa y comercial. 
 
-INSTRUCCIONES:
-- Responde siempre en el mismo idioma que usa el usuario (español, català, inglés, etc.)
-- Sé amable, conciso y profesional. No uses emojis en exceso.
-- Solo habla de temas relacionados con AURA y sus productos. Si te preguntan algo no relacionado, redirige amablemente.
-- Si no sabes el stock exacto o información no listada, dilo honestamente y sugiere contactar con el soporte.
-- Cuando recomiendes productos, menciona el nombre, la categoría y el precio.
-- No inventes productos que no estén en el catálogo.
+INSTRUCCIONES CLAVE:
+- Responde siempre de forma corta y directa, sin rodeos.
+- Cuando menciones o recomiendes un producto, TIENES QUE incluir su imagen usando Markdown: ![Nombre](URL)
+- Si un producto indica "[Imagen: URL]", usa esa URL. Si indica "[Sin imagen]", no pongas imagen.
+- Cuando recomiendes, menciona nombre, precio y una frase corta sobre por qué es bueno.
+- Si no sabes algo, dilo rápidamente. No inventes productos.
 
 ${catalogContext}
 
@@ -37,45 +34,58 @@ Recuerda: eres la cara digital de AURA. Sé útil, preciso y refleja los valores
 }
 
 /**
- * Envía mensajes al modelo Gemini y devuelve la respuesta en texto.
+ * Envía mensajes al modelo de Groq y devuelve la respuesta en texto.
  * @param messages - Historial de conversación (rol + contenido)
  * @returns Texto de la respuesta del asistente
  */
 export async function sendChatMessage(messages: ChatMessage[]): Promise<string> {
     if (!apiKey) {
-        throw new Error('GOOGLE_API_KEY no está configurada en las variables de entorno.');
+        throw new Error('GROQ_API_KEY no está configurada en las variables de entorno (.env). Consíguela en console.groq.com');
     }
 
     const systemPrompt = await buildSystemPrompt();
 
-    // Mapeamos los mensajes al formato que espera la SDK de Gemini
-    const history: Content[] = messages.slice(0, -1).map((msg) => ({
-        role: msg.role === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.content }],
-    }));
+    // Mapeamos los mensajes al formato de ChatCompletion de Groq
+    const chatMessages = [
+        { role: 'system' as const, content: systemPrompt },
+        ...messages.map((msg) => ({
+            role: (msg.role === 'assistant' ? 'assistant' : 'user') as 'assistant' | 'user',
+            content: msg.content,
+        }))
+    ];
 
-    // El último mensaje es el del usuario actual
-    const lastMessage = messages[messages.length - 1];
-    if (!lastMessage || lastMessage.role !== 'user') {
-        throw new Error('El último mensaje debe ser del usuario.');
-    }
-
-    const chat = ai.chats.create({
-        model: MODEL,
-        config: {
-            systemInstruction: systemPrompt,
+    try {
+        const response = await groq.chat.completions.create({
+            model: MODEL,
+            messages: chatMessages,
             temperature: 0.7,
-            maxOutputTokens: 1024,
-        },
-        history,
-    });
+            max_tokens: 1024,
+        });
 
-    const response = await chat.sendMessage({ message: lastMessage.content });
+        const reply = response.choices[0]?.message?.content;
 
-    const text = response.text;
-    if (!text) {
-        throw new Error('Gemini devolvió una respuesta vacía.');
+        if (!reply) {
+            throw new Error('Groq no devolvió una respuesta válida.');
+        }
+
+        return reply;
+    } catch (error: any) {
+        console.error('Error al llamar a Groq:', error);
+
+        // Si falla el modelo grande, intentamos el pequeño como fallback
+        if (MODEL !== 'llama3-8b-8192') {
+            try {
+                const fallbackResponse = await groq.chat.completions.create({
+                    model: 'llama3-8b-8192',
+                    messages: chatMessages,
+                    temperature: 0.7,
+                });
+                return fallbackResponse.choices[0]?.message?.content ?? 'Error en fallback.';
+            } catch (f) {
+                throw new Error(`Error en Groq: ${error.message}`);
+            }
+        }
+
+        throw new Error(`Error en Groq: ${error.message}`);
     }
-
-    return text;
 }

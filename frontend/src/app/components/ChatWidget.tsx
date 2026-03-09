@@ -21,6 +21,41 @@ function formatTime(date?: Date): string {
 
 function MessageBubble({ msg }: { msg: ChatMessage }) {
     const isUser = msg.role === 'user';
+
+    // Miniparser para renderizar las imágenes markdown: ![texto](url)
+    const renderContent = (text: string) => {
+        const imageRegex = /!\[([^\]]*)\]\(([^)]+)\)/g;
+        const parts = [];
+        let lastIndex = 0;
+        let match;
+
+        while ((match = imageRegex.exec(text)) !== null) {
+            // Añadir texto precedente
+            if (match.index > lastIndex) {
+                parts.push(text.slice(lastIndex, match.index));
+            }
+            // Añadir imagen
+            const alt = match[1];
+            const url = match[2];
+            parts.push(
+                <img
+                    key={lastIndex}
+                    src={url}
+                    alt={alt}
+                    style={{ maxWidth: '100%', borderRadius: '0.5rem', marginTop: '0.5rem' }}
+                    loading="lazy"
+                />
+            );
+            lastIndex = match.index + match[0].length;
+        }
+        // Añadir el resto
+        if (lastIndex < text.length) {
+            parts.push(text.slice(lastIndex));
+        }
+
+        return parts.length > 0 ? parts : text;
+    };
+
     return (
         <div className={`chat-bubble-row ${isUser ? 'chat-bubble-row--user' : 'chat-bubble-row--assistant'}`}>
             {!isUser && (
@@ -38,7 +73,9 @@ function MessageBubble({ msg }: { msg: ChatMessage }) {
                 </div>
             )}
             <div className={`chat-bubble ${isUser ? 'chat-bubble--user' : 'chat-bubble--assistant'}`}>
-                <p className="chat-bubble__text">{msg.content}</p>
+                <div className="chat-bubble__text" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: '0.85rem' }}>
+                    {renderContent(msg.content)}
+                </div>
                 <span className="chat-bubble__time">{formatTime(msg.timestamp)}</span>
             </div>
         </div>
