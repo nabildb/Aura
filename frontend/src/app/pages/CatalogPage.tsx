@@ -1,11 +1,12 @@
 // Página de catálogo: lista productos, filtros, ordenación y CRUD (para admin).
 // VISUAL: sidebar pulido, barra de búsqueda con icono, cards con stagger animado, botones con microinteracciones.
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Header } from '@/app/components/Header';
 import { supabase } from '@/services/supabase';
 import type { Product } from '@/types/product';
 import { useAuth } from '@/app/context/AuthContext';
+import { useCart } from '@/app/context/CartContext';
 import { ProductModal } from '@/app/components/ProductModal';
 import { productService } from '@/services/productService';
 import { Footer } from '@/app/components/Footer';
@@ -18,7 +19,9 @@ const hasSupabaseConfig =
   Boolean(import.meta.env.VITE_SUPABASE_ANON_KEY);
 
 export function CatalogPage() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, isLoggedIn } = useAuth();
+  const { addToCart } = useCart();
+  const navigate = useNavigate();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<string[]>(fallbackCategories);
@@ -444,6 +447,10 @@ export function CatalogPage() {
                       <div className="mt-4 pt-4 border-t border-slate-100 flex items-center gap-3">
                         {/* Añadir al carrito — gradiente AURA + microinteracción */}
                         <button
+                          onClick={() => {
+                            if (!isLoggedIn) { navigate('/login'); return; }
+                            addToCart(product.id);
+                          }}
                           className="flex-1 rounded-xl bg-gradient-to-r from-[#00D4FF] via-[#5B9FE3] to-[#A855F7]
                                      px-3 py-2.5 text-xs font-semibold text-white
                                      hover:scale-105 hover:shadow-[var(--shadow-glow-blue)]

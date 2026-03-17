@@ -4,6 +4,7 @@
 
 import { useRef, useState, useEffect, type KeyboardEvent } from 'react';
 import { useChat } from '@/app/context/ChatContext';
+import { useCart } from '@/app/context/CartContext';
 import type { ChatMessage } from '@/types/chat';
 
 /* ─────────────────────────────────────────────────────────────────────────── */
@@ -112,6 +113,7 @@ function TypingIndicator() {
 
 export default function ChatWidget() {
     const { messages, isLoading, error, sendMessage, clearChat } = useChat();
+    const { drawerOpen } = useCart();
     const [open, setOpen] = useState(false);
     const [inputValue, setInputValue] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -149,10 +151,10 @@ export default function ChatWidget() {
         <>
             {/* Panel del chat */}
             <div
-                className={`chat-panel ${open ? 'chat-panel--open' : ''}`}
+                className={`chat-panel ${open && !drawerOpen ? 'chat-panel--open' : ''}`}
                 role="dialog"
                 aria-label="Asistente IA de AURA"
-                aria-hidden={!open}
+                aria-hidden={!open || drawerOpen}
             >
                 {/* Header */}
                 <div className="chat-header">
@@ -247,7 +249,7 @@ export default function ChatWidget() {
             {/* Botón flotante */}
             <button
                 id="chat-fab"
-                className={`chat-fab ${open ? 'chat-fab--open' : ''}`}
+                className={`chat-fab ${open ? 'chat-fab--open' : ''} ${drawerOpen ? 'chat-fab--hidden' : ''}`}
                 onClick={() => setOpen((v) => !v)}
                 aria-label={open ? 'Cerrar asistente IA' : 'Abrir asistente IA'}
                 aria-expanded={open}

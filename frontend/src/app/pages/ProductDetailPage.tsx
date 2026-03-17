@@ -3,9 +3,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Header } from '@/app/components/Header';
 import { Footer } from '@/app/components/Footer';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '@/services/supabase';
 import type { Product } from '@/types/product';
+import { useAuth } from '@/app/context/AuthContext';
+import { useCart } from '@/app/context/CartContext';
 
 const fallbackImages = [
   'https://placehold.co/600x400?text=Producto',
@@ -19,6 +21,9 @@ const hasSupabaseConfig =
 
 export function ProductDetailPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
+  const { addToCart } = useCart();
   const [selected, setSelected] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [product, setProduct] = useState<Product | null>(null);
@@ -254,7 +259,12 @@ export function ProductDetailPage() {
                 </div>
 
                 {/* Agregar al carrito — gradiente AURA */}
-                <button className="flex-1 min-w-[140px] inline-flex items-center justify-center gap-2 rounded-xl
+                <button
+                  onClick={() => {
+                    if (!isLoggedIn) { navigate('/login'); return; }
+                    addToCart(Number(id), quantity);
+                  }}
+                  className="flex-1 min-w-[140px] inline-flex items-center justify-center gap-2 rounded-xl
                                    bg-gradient-to-r from-[#00D4FF] via-[#5B9FE3] to-[#A855F7]
                                    px-4 py-2.5 text-sm font-bold text-white
                                    hover:scale-105 hover:shadow-[var(--shadow-glow-blue)]
@@ -265,7 +275,12 @@ export function ProductDetailPage() {
                   Agregar al carrito
                 </button>
 
-                <button className="inline-flex items-center justify-center rounded-xl border-2 border-slate-200
+                <button
+                  onClick={() => {
+                    if (!isLoggedIn) { navigate('/login'); return; }
+                    addToCart(Number(id), quantity).then(() => navigate('/cart'));
+                  }}
+                  className="inline-flex items-center justify-center rounded-xl border-2 border-slate-200
                                    px-4 py-2.5 text-sm font-semibold text-slate-700
                                    hover:border-[#5B9FE3] hover:text-[#5B9FE3]
                                    active:scale-95 transition-all duration-200">

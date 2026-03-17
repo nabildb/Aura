@@ -1,4 +1,4 @@
-﻿/* Estilos globales: importa tipografías y tema, y aplica base del body */
+/* Estilos globales: importa tipografías y tema, y aplica base del body */
 @import './fonts.css';
 @import './theme.css';
 @import 'tailwindcss';
@@ -170,6 +170,11 @@ body {
 }
 .chat-fab:active { transform: scale(0.95); }
 .chat-fab--open  { animation: chat-fab-pop 0.35s var(--ease-spring); }
+.chat-fab--hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.6) translateY(30px);
+}
 
 /* Íconos dentro del FAB */
 .chat-fab__icon {

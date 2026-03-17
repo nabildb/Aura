@@ -1,4 +1,4 @@
-﻿// Define las rutas de la SPA usando react-router.
+// Define las rutas de la SPA usando react-router.
 // Cada ruta monta la página correspondiente.
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { HomePage } from '@/app/pages/HomePage';
@@ -9,14 +9,17 @@ import { ContactPage } from '@/app/pages/ContactPage';
 import { LoginPage } from '@/app/pages/LoginPage';
 import { AdminLoginPage } from '@/app/pages/AdminLoginPage';
 import { UserAccountPage } from '@/app/pages/UserAccountPage';
+import { CartPage } from '@/app/pages/CartPage';
 import { ScrollToTop } from '@/app/components/ScrollToTop';
 import { ScrollToTopButton } from '@/app/components/ScrollToTopButton';
+import { CartDrawer } from '@/app/components/CartDrawer';
 
 export default function AppRouter() {
   return (
     <BrowserRouter>
       <ScrollToTop />
       <ScrollToTopButton />
+      <CartDrawer />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/Home" element={<HomePage />} />
@@ -27,6 +30,7 @@ export default function AppRouter() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route path="/account" element={<UserAccountPage />} />
+        <Route path="/cart" element={<CartPage />} />
         <Route
           path="*"
           element={

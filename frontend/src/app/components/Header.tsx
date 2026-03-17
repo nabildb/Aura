@@ -1,13 +1,15 @@
-﻿// Cabecera de la web: logo, navegación principal y botón de acceso/gestión.
+// Cabecera de la web: logo, navegación principal y botón de acceso/gestión.
 // VISUAL: sticky + blur al hacer scroll; underline animado en links; CTA con microinteracción.
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/app/context/AuthContext';
-import { User } from 'lucide-react';
+import { useCart } from '@/app/context/CartContext';
+import { User, ShoppingCart } from 'lucide-react';
 import logoImage from '/LogoAuraSinFondo.png';
 
 export function Header() {
   const { isAdmin, isLoggedIn, profile, signOut } = useAuth();
+  const { totalItems, setDrawerOpen } = useCart();
   const location = useLocation();
 
   const [scrolled, setScrolled] = useState(false);
@@ -40,13 +42,15 @@ export function Header() {
       ].join(' ')}
     >
       <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center transition-transform duration-200 hover:scale-105">
-            <img src={logoImage} alt="AURA Logo" className="h-10 w-auto" />
-          </Link>
+        <div className="flex items-center">
+          {/* Logo - Contenedor flexible izquierdo */}
+          <div className="flex-1 flex justify-start">
+            <Link to="/" className="flex items-center transition-transform duration-200 hover:scale-105">
+              <img src={logoImage} alt="AURA Logo" className="h-10 w-auto" />
+            </Link>
+          </div>
 
-          {/* Navegación */}
+          {/* Navegación - Centrada en el espacio restante */}
           <nav className="hidden md:flex gap-6">
             {[
               { to: '/', label: 'Inicio' },
@@ -68,8 +72,25 @@ export function Header() {
             ))}
           </nav>
 
-          {/* Área de usuario */}
-          <div className="flex items-center gap-3">
+          {/* Carrito + Área de usuario - Contenedor flexible derecho */}
+          <div className="flex-1 flex items-center justify-end gap-3">
+            {/* Icono del carrito */}
+            <button
+              onClick={() => setDrawerOpen(true)}
+              className="relative flex h-10 w-10 items-center justify-center rounded-full border border-slate-200
+                         text-slate-600 hover:border-[#5B9FE3] hover:text-[#5B9FE3] hover:bg-sky-50
+                         active:scale-95 transition-all duration-200"
+              aria-label="Abrir carrito"
+            >
+              <ShoppingCart className="h-4.5 w-4.5" />
+              {totalItems > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full
+                                 bg-gradient-to-r from-[#00D4FF] to-[#A855F7] text-[10px] font-extrabold text-white
+                                 shadow-sm">
+                  {totalItems > 99 ? '99+' : totalItems}
+                </span>
+              )}
+            </button>
             {isAdmin ? (
               /* Admin logged in */
               <button
