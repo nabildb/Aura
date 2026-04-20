@@ -1,6 +1,6 @@
 // Define las rutas de la SPA usando react-router.
 // Cada ruta monta la página correspondiente.
-import { HashRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { HomePage } from '@/app/pages/HomePage';
 import { CatalogPage } from '@/app/pages/CatalogPage';
 import { ProductDetailPage } from '@/app/pages/ProductDetailPage';
@@ -16,7 +16,7 @@ import { CartDrawer } from '@/app/components/CartDrawer';
 
 export default function AppRouter() {
   return (
-    <HashRouter>
+    <BrowserRouter>
       <ScrollToTop />
       <ScrollToTopButton />
       <CartDrawer />
@@ -45,6 +45,6 @@ export default function AppRouter() {
           }
         />
       </Routes>
-    </HashRouter>
+    </BrowserRouter>
   );
 }
