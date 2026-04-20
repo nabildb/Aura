@@ -27,7 +27,7 @@ export function CartDrawer() {
       {/* Drawer */}
       <aside
         className={[
-          'fixed right-0 top-0 z-[61] h-full w-full max-w-md flex flex-col',
+          'fixed right-0 top-0 z-[130] h-[100dvh] w-full max-w-md flex flex-col',
           'bg-white shadow-2xl transition-transform duration-300 ease-out',
           drawerOpen ? 'translate-x-0' : 'translate-x-full',
         ].join(' ')}
@@ -185,7 +185,7 @@ export function CartDrawer() {
 
         {/* Footer */}
         {isLoggedIn && items.length > 0 && (
-          <div className="border-t border-slate-100 px-6 py-4 space-y-3">
+          <div className="border-t border-slate-100 px-6 pt-4 pb-8 md:pb-4 space-y-3">
             {/* Total */}
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-slate-500">Subtotal</span>

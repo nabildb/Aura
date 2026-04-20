@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/app/context/AuthContext';
 import { useCart } from '@/app/context/CartContext';
-import { User, ShoppingCart } from 'lucide-react';
+import { User, ShoppingCart, Menu, X } from 'lucide-react';
 import logoImage from '/LogoAuraSinFondo.png';
 
 export function Header() {
@@ -13,7 +13,12 @@ export function Header() {
   const location = useLocation();
 
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  useEffect(() => {
+    if (mobileMenuOpen) document.body.style.overflow = 'hidden';
+    else document.body.style.overflow = 'unset';
+  }, [mobileMenuOpen]);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -34,7 +39,7 @@ export function Header() {
   return (
     <header
       className={[
-        'fixed inset-x-0 top-0 z-50',
+        'fixed inset-x-0 top-0 z-[100]',
         'transition-all duration-300',
         scrolled
           ? 'bg-white/80 backdrop-blur-md border-b border-slate-200/70 shadow-sm'
@@ -117,7 +122,7 @@ export function Header() {
               </Link>
             ) : (
               /* Not logged in */
-              <div className="flex items-center gap-2">
+              <div className="hidden md:flex items-center gap-2">
                 <Link
                   to="/login"
                   className="px-4 py-2 border border-slate-200 text-slate-600 rounded-full text-sm font-semibold
@@ -137,8 +142,92 @@ export function Header() {
                 </Link>
               </div>
             )}
+
+            {/* Mobile menu toggle */}
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="md:hidden flex h-10 w-10 items-center justify-center rounded-full border border-slate-200
+                         text-slate-600 hover:border-[#5B9FE3] hover:text-[#5B9FE3] hover:bg-sky-50
+                         transition-colors"
+              aria-label="Abrir menú"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
           </div>
         </div>
+      </div>
+
+      {/* ─── MOBILE MENU OVERLAY ─── */}
+      <div 
+        className={[
+          'fixed inset-0 z-[110] bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 md:hidden',
+          mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        ].join(' ')}
+        onClick={() => setMobileMenuOpen(false)}
+      />
+
+      {/* ─── MOBILE MENU DRAWER ─── */}
+      <div 
+        className={[
+          'fixed top-0 right-0 z-[120] h-[100dvh] w-[280px] bg-white/95 backdrop-blur-md border-l border-slate-200/70 shadow-2xl',
+          'transition-transform duration-300 ease-in-out md:hidden flex flex-col',
+          mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        ].join(' ')}
+      >
+        <div className="flex items-center justify-between p-4 border-b border-slate-100">
+          <img src={logoImage} alt="AURA Logo" className="h-8 w-auto mix-blend-multiply" />
+          <button 
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-50 text-slate-500 hover:bg-slate-100 transition-colors"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <nav className="flex flex-col gap-2 p-6 overflow-y-auto">
+          {[
+            { to: '/', label: 'Inicio' },
+            { to: '/products', label: 'Productos' },
+            { to: '/about', label: 'Acerca de' },
+            { to: '/contact', label: 'Contacto' },
+          ].map(({ to, label }) => (
+            <Link
+              key={to}
+              to={to}
+              onClick={() => setMobileMenuOpen(false)}
+              className={[
+                'px-4 py-3 rounded-xl text-base font-semibold transition-colors',
+                isActive(to) 
+                  ? 'bg-gradient-to-r from-[#00D4FF]/10 to-[#5B9FE3]/10 text-[#5B9FE3]' 
+                  : 'text-slate-600 hover:bg-slate-50'
+              ].join(' ')}
+            >
+              {label}
+            </Link>
+          ))}
+
+          <div className="my-6 border-t border-slate-100" />
+          
+          {/* User actions on mobile */}
+          {!isAdmin && !isLoggedIn && (
+            <div className="flex flex-col gap-3">
+              <Link
+                to="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full py-3 border border-slate-200 text-slate-600 text-center rounded-xl text-sm font-semibold active:scale-95 transition-transform"
+              >
+                Iniciar sesión
+              </Link>
+              <Link
+                to="/admin/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full py-3 bg-gradient-to-r from-[#00D4FF] via-[#5B9FE3] to-[#A855F7] text-white text-center rounded-xl text-sm font-semibold active:scale-95 transition-transform shadow-[var(--shadow-glow-cyan)]"
+              >
+                Acceso Admin
+              </Link>
+            </div>
+          )}
+        </nav>
       </div>
     </header>
   );

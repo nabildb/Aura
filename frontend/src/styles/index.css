@@ -149,7 +149,7 @@ body {
   position: fixed;
   bottom: 1.75rem;
   right: 1.75rem;
-  z-index: 9999;
+  z-index: 90;
   width: 56px;
   height: 56px;
   border-radius: var(--radius-pill);
@@ -204,7 +204,7 @@ body {
   position: fixed;
   bottom: calc(1.75rem + 56px + 14px);
   right: 1.75rem;
-  z-index: 9998;
+  z-index: 95;
   width: 360px;
   max-width: calc(100vw - 2rem);
   height: 520px;

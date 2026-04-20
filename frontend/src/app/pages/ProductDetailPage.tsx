@@ -293,13 +293,13 @@ export function ProductDetailPage() {
           {/* ─── TABS ─────────────────────────────────────────────── */}
           <div className="mt-16 border-t border-slate-100 pt-12">
             {/* Pestañas */}
-            <div className="flex border-b border-slate-200 gap-1">
+            <div className="flex overflow-x-auto whitespace-nowrap border-b border-slate-200 gap-1 pb-px scrollbar-hide">
               {tabs.map(({ id: tabId, label }) => (
                 <button
                   key={tabId}
                   onClick={() => setActiveTab(tabId)}
                   className={[
-                    'relative px-6 py-3.5 text-sm font-bold uppercase tracking-wider transition-colors duration-200',
+                    'relative px-4 sm:px-6 py-3.5 text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors duration-200',
                     activeTab === tabId
                       ? 'text-[#5B9FE3]'
                       : 'text-slate-400 hover:text-slate-600',

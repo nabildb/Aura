@@ -10,7 +10,7 @@ import { useCart } from '@/app/context/CartContext';
 import { ProductModal } from '@/app/components/ProductModal';
 import { productService } from '@/services/productService';
 import { Footer } from '@/app/components/Footer';
-import { ChevronDown, Search } from 'lucide-react';
+import { ChevronDown, Search, SlidersHorizontal, X } from 'lucide-react';
 
 const fallbackCategories = ['Electrónica', 'Ropa', 'Hogar', 'Deportes', 'Libros'];
 
@@ -35,6 +35,7 @@ export function CatalogPage() {
   // Estados para modales
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenSort, setIsModalOpenSort] = useState(false);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   // Carga productos y categorías desde Supabase (usado en montaje y tras CRUD)
@@ -163,13 +164,45 @@ export function CatalogPage() {
       <main className="mx-auto w-full max-w-7xl px-6 py-10">
         <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
 
+          {/* ─── BOTÓN FILTROS MÓVIL (Solo lg e inferiores) ─── */}
+          <div className="lg:hidden flex items-center justify-between mt-2 mb-[-1rem]">
+            <button
+              onClick={() => setMobileFiltersOpen(true)}
+              className="flex items-center gap-2 rounded-xl bg-white border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:border-[#5B9FE3] hover:text-[#5B9FE3] active:scale-95 transition-all"
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+              Ver Filtros
+            </button>
+          </div>
+
           {/* ─── SIDEBAR / FILTROS ─────────────────────────────────── */}
-          <aside className="h-fit rounded-2xl border border-slate-200 bg-white p-6 shadow-[var(--shadow-card)]
-                            ring-1 ring-slate-100">
+          {/* Overlay Mobile */}
+          <div 
+             className={[
+                'fixed inset-0 z-[60] bg-slate-900/40 backdrop-blur-sm lg:hidden transition-opacity duration-300',
+                mobileFiltersOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+             ].join(' ')}
+             onClick={() => setMobileFiltersOpen(false)}
+          />
+          <aside className={[
+             // Clases base y desktop
+             'lg:block h-fit rounded-2xl border border-slate-200 bg-white shadow-[var(--shadow-card)] ring-1 ring-slate-100 p-6',
+             // Clases mobile drawer
+             'fixed lg:relative inset-y-0 left-0 z-[70] w-[280px] lg:w-auto h-full lg:h-fit overflow-y-auto lg:overflow-visible transition-transform duration-300 lg:translate-x-0',
+             mobileFiltersOpen ? 'translate-x-0' : '-translate-x-full'
+          ].join(' ')}>
             {/* Header del sidebar */}
-            <div className="flex items-center gap-2 mb-5">
-              <div className="w-1 h-5 rounded-full bg-gradient-to-b from-[#00D4FF] to-[#A855F7]" />
-              <h2 className="text-base font-bold text-slate-800">Categorías</h2>
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2">
+                <div className="w-1 h-5 rounded-full bg-gradient-to-b from-[#00D4FF] to-[#A855F7]" />
+                <h2 className="text-base font-bold text-slate-800">Categorías</h2>
+              </div>
+              <button 
+                onClick={() => setMobileFiltersOpen(false)}
+                className="lg:hidden h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-500 hover:text-slate-800 hover:bg-slate-100"
+              >
+                <X className="h-4 w-4" />
+              </button>
             </div>
 
             {/* Lista de categorías */}
@@ -282,10 +315,10 @@ export function CatalogPage() {
                   {isAdmin && (
                     <button
                       onClick={() => { setEditingProduct(null); setIsModalOpen(true); }}
-                      className="whitespace-nowrap rounded-full bg-gradient-to-r from-[#00D4FF] to-[#5B9FE3]
-                                 px-4 py-2 text-sm font-semibold text-white
+                      className="whitespace-nowrap px-4 py-2.5 rounded-full bg-gradient-to-r from-[#00D4FF] to-[#5B9FE3]
+                                 text-sm font-semibold text-white
                                  hover:scale-105 hover:shadow-[var(--shadow-glow-cyan)]
-                                 active:scale-95 transition-all duration-200"
+                                 active:scale-95 transition-all duration-200 hidden sm:block"
                     >
                       + Añadir
                     </button>

@@ -144,16 +144,16 @@ export function HomePage() {
         <div
           ref={blob1Ref}
           aria-hidden="true"
-          className="absolute -top-32 -left-32 h-[480px] w-[480px]
-                     rounded-full bg-[#00d4ff]/20 blur-[120px]
+          className="absolute -top-16 -left-16 md:-top-32 md:-left-32 w-64 h-64 md:h-[480px] md:w-[480px]
+                     rounded-full bg-[#00d4ff]/20 blur-[80px] md:blur-[120px]
                      transition-transform duration-700 ease-out pointer-events-none"
         />
         {/* Blob decorativo 2 — purple */}
         <div
           ref={blob2Ref}
           aria-hidden="true"
-          className="absolute -bottom-24 -right-24 h-[400px] w-[400px]
-                     rounded-full bg-[#a855f7]/20 blur-[100px]
+          className="absolute -bottom-16 -right-16 md:-bottom-24 md:-right-24 w-56 h-56 md:h-[400px] md:w-[400px]
+                     rounded-full bg-[#a855f7]/20 blur-[60px] md:blur-[100px]
                      transition-transform duration-700 ease-out pointer-events-none"
         />
 

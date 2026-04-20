@@ -38,7 +38,7 @@ export function Footer() {
                 visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8',
             ].join(' ')}
         >
-            <div className="mx-auto max-w-7xl px-6 py-14">
+            <div className="mx-auto max-w-7xl px-6 pt-14 pb-32 md:py-14">
                 <div className="grid grid-cols-1 gap-12 md:grid-cols-4 lg:grid-cols-5">
 
                     {/* Logo y descripción */}
